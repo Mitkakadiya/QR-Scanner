@@ -1,8 +1,5 @@
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:qr_scanner/qr_result.dart';
@@ -36,6 +33,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.black,
         body: Stack(
           children: <Widget>[
             _buildQrView(context),
@@ -117,7 +115,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
+      if (result == null) {
+        setState(() {
+          result = scanData;
+        });
+        controller.pauseCamera();
         result = scanData;
         Navigator.push(
             context,
@@ -125,8 +127,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
               builder: (context) => QrResult(
                 result: result,
               ),
-            ));
-      });
+            )).then((_) {
+          controller.resumeCamera(); // Resume scanning when returning
+          setState(() {
+            result = null; // Reset result to allow new scans
+          });
+        });
+      }
     });
   }
 
