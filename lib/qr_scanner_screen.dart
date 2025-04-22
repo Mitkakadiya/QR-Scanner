@@ -1,8 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
+import 'package:qr_scanner/api/api_config.dart';
+import 'package:qr_scanner/api/api_service.dart';
 import 'package:qr_scanner/qr_result.dart';
+import 'package:dio/dio.dart' as dio;
 
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
@@ -73,9 +77,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                       setState(() {
                         qrPause = !qrPause;
                       });
-                      qrPause
-                          ? controller?.pauseCamera()
-                          : controller?.resumeCamera();
+                      qrPause ? controller?.pauseCamera() : controller?.resumeCamera();
                     },
                     icon: Icon(
                       qrPause ? Icons.pause : Icons.play_arrow,
@@ -91,21 +93,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   Widget _buildQrView(BuildContext context) {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
-    var scanArea = (MediaQuery.of(context).size.width < 400 ||
-            MediaQuery.of(context).size.height < 400)
-        ? 150.0
-        : 300.0;
+    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
-      overlay: QrScannerOverlayShape(
-          borderColor: Colors.red,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: scanArea),
+      overlay: QrScannerOverlayShape(borderColor: Colors.red, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -121,20 +115,38 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
         });
         controller.pauseCamera();
         result = scanData;
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => QrResult(
-                result: result,
-              ),
-            )).then((_) {
-          controller.resumeCamera(); // Resume scanning when returning
-          setState(() {
-            result = null; // Reset result to allow new scans
+        getDetailsFromQr(callBack: (){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => QrResult(
+                  result: result,
+                ),
+              )).then((_) {
+            controller.resumeCamera(); // Resume scanning when returning
+            setState(() {
+              result = null; // Reset result to allow new scans
+            });
           });
         });
       }
     });
+  }
+
+  getDetailsFromQr({Function? callBack}) {
+    apiServiceCall(
+        params: {},
+        serviceUrl: ApiConfig.getTicketDetails,
+        success: (dio.Response<dynamic> response) {
+          if (callBack != null) {
+            callBack();
+          }
+        },
+        error: (dio.Response<dynamic> response) {},
+        isStopAction: true.obs,
+        isLoading: false.obs,
+        methodType: ApiConfig.methodGET,
+        isQueryParam: true);
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
