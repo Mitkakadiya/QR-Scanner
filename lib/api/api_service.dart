@@ -3,21 +3,24 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' as get_x;
+import '../commonWidgets/custom_text.dart';
+import '../utility/colors.dart';
+import '../utility/text_style.dart';
 import 'api_config.dart';
 import 'api_utility.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 Future<void> apiServiceCall(
     {required Map<String, dynamic> params,
-      required String serviceUrl,
-      required Function success,
-      required Function error,
-      required get_x.RxBool isStopAction,
-      required get_x.RxBool isLoading,
-      required String methodType,
-      required bool isQueryParam,
-      bool isFromLogout = false,
-      FormData? formValues}) async {
+    required String serviceUrl,
+    required Function success,
+    required Function error,
+    required get_x.RxBool isStopAction,
+    required get_x.RxBool isLoading,
+    required String methodType,
+    required bool isQueryParam,
+    bool isFromLogout = false,
+    FormData? formValues}) async {
   Map<String, dynamic>? tempParams = params;
   String? tempServiceUrl = serviceUrl;
   Function? tempSuccess = success;
@@ -89,7 +92,7 @@ Future<void> apiServiceCall(
           print("---------------------------------------------");
           // print(getPreference.read('token'));
           print(tempServiceUrl);
-          // print(trimJsonValues(tempParams));
+          print(trimJsonValues(tempParams));
           print(response.data);
           print(response.statusCode);
           print("---------------------------------------------");
@@ -100,84 +103,42 @@ Future<void> apiServiceCall(
         } else if (response.statusCode == 201) {
           tempSuccess(response);
         } else if (response.statusCode == 401) {
-          // if (getPreference.read("refresh") != null) {
-          //   AuthController.to.refreshTokenApi(
-          //     callBack: () {
-          //       apiServiceCall(
-          //         params: tempParams,
-          //         serviceUrl: tempServiceUrl,
-          //         success: tempSuccess,
-          //         error: tempError,
-          //         isStopAction: isStopAction,
-          //         isLoading: isLoading,
-          //         isQueryParam: tempIsQueryParam,
-          //         methodType: tempMethodType,
-          //         formValues: tempFormData,
-          //         isFromLogout: tempIsFromLogout,
-          //       );
-          //     },
-          //     isLoading: isLoading.value,
-          //     isStopAction: isStopAction.value,
-          //   );
-          // } else {
-          //   if(getIsLogin() == true) {
-          //     getPreference.erase();
-          //     setOnBoard(complete: true);
-          //     get_x.Get.offAll(() => const LoginScreen(), transition: get_x.Transition.rightToLeftWithFade);
-          //   }
-          // }
         } else {
-          // if (response != null && response.data != null) {
-          //   try {
-          //     var jsonResponse = jsonDecode(response.data);
-          //     tempError(response);
-          //   } catch (e) {
-          //     showSnackBar(
-          //         title: ApiConfig.error,
-          //         message: getCurrentLanguageString(
-          //           english: somethingWentWrong,
-          //           french: somethingWentWrongFrench,
-          //           spanish: somethingWentWrongSpanish,
-          //         ));
-          //   }
-          // } else {
-          //   showSnackBar(
-          //       title: ApiConfig.error,
-          //       message: getCurrentLanguageString(
-          //         english: somethingWentWrong,
-          //         french: somethingWentWrongFrench,
-          //         spanish: somethingWentWrongSpanish,
-          //       ));
-          // }
+          if (response != null && response.data != null) {
+            try {
+              var jsonResponse = jsonDecode(response.data);
+              tempError(response);
+            } catch (e) {
+              showSnackBar(title: ApiConfig.error, message: "Something went wrong");
+            }
+          } else {
+            showSnackBar(
+              title: ApiConfig.error,
+              message: "Something went wrong",
+            );
+          }
         }
       } else {
         if (isStopAction.value == true) {
           Navigator.of(get_x.Get.overlayContext!).pop();
         }
         isLoading.value = false;
-        // get_x.Get.showSnackbar(get_x.GetSnackBar(
-        //   margin: const EdgeInsets.symmetric(horizontal: 12),
-        //   backgroundColor: colorFFFFFF,
-        //   message: getCurrentLanguageString(
-        //     english: somethingWentWrong,
-        //     french: somethingWentWrongFrench,
-        //     spanish: somethingWentWrongSpanish,
-        //   ),
-        //   borderRadius: 4,
-        //   icon: const Icon(Icons.info_outline, color: colorFFFFFF),
-        //   duration: const Duration(seconds: 3),
-        // ));
+        get_x.Get.showSnackbar(get_x.GetSnackBar(
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          backgroundColor: colorFFFFFF,
+          message: "Something went wrong",
+          borderRadius: 4,
+          icon: const Icon(Icons.info_outline, color: colorFFFFFF),
+          duration: const Duration(seconds: 3),
+        ));
         tempError(response);
       }
     } catch (e) {
       print(e);
-      // showSnackBar(
-      //     title: ApiConfig.error,
-      //     message: getCurrentLanguageString(
-      //       english: somethingWentWrong,
-      //       french: somethingWentWrongFrench,
-      //       spanish: somethingWentWrongSpanish,
-      //     ));
+      showSnackBar(
+        title: ApiConfig.error,
+        message: "Something went wrong",
+      );
       if (isStopAction.value == true) {
         Navigator.of(get_x.Get.overlayContext!).pop();
       }
@@ -188,41 +149,9 @@ Future<void> apiServiceCall(
       Navigator.of(get_x.Get.overlayContext!).pop();
     }
     isLoading.value = false;
-    // showSnackBar(
-    //     title: ApiConfig.error,
-    //     message: getCurrentLanguageString(
-    //       english: makeSureWifi,
-    //       spanish: makeSureWifiSpanish,
-    //       french: makeSureWifiFrench,
-    //     ));
+    showSnackBar(title: ApiConfig.error, message: "Make sure wifi or cellular data is turned on and then try again.");
   }
 }
-
-// void handleAuthentication(bool tempIsFromLogout) {
-//   if (!tempIsFromLogout) {
-//     // apiAlertDialog(
-//     //     buttonTitle: getCurrentLanguageString(
-//     //       english: logInAgain,
-//     //       french: logInAgainFrench,
-//     //       spanish: logInAgainSpanish,
-//     //     ),
-//     //     message: getCurrentLanguageString(
-//     //       english: authenticationMessage,
-//     //       french: authenticationMessageFrench,
-//     //       spanish: authenticationMessageSpanish,
-//     //     ),
-//     //     isShowGoBack: false,
-//     //     buttonCallBack: () {
-//     //       getPreference.erase();
-//     //       setIsLogin(isLogin: false);
-//     //       //   get_x.Get.offAll(() => const LoginScreen(), transition: get_x.Transition.rightToLeftWithFade);
-//     //     });
-//   } else {
-//     getPreference.erase();
-//     setIsLogin(isLogin: false);
-//     //get_x.Get.offAll(() => const LoginScreen(), transition: get_x.Transition.rightToLeftWithFade);
-//   }
-// }
 
 get_x.RxBool isOnline = true.obs;
 
@@ -254,60 +183,6 @@ bool handleResponse(Response response) {
     return false;
   }
 }
-
-// apiAlertDialog({required String message, String? buttonTitle, Function? buttonCallBack, bool isShowGoBack = true}) {
-//   if (!get_x.Get.isDialogOpen!) {
-//     get_x.Get.dialog(
-//       WillPopScope(
-//         onWillPop: () {
-//           return isShowGoBack ? Future.value(true) : Future.value(false);
-//         },
-//         child: CupertinoAlertDialog(
-//           title: const Text(appName),
-//           content: Text(message),
-//           actions: isShowGoBack
-//               ? [
-//             CupertinoDialogAction(
-//               isDefaultAction: true,
-//               child: Text(isNotEmptyString(buttonTitle) ? buttonTitle! : tryAgain),
-//               onPressed: () {
-//                 if (buttonCallBack != null) {
-//                   buttonCallBack();
-//                 } else {
-//                   get_x.Get.back();
-//                 }
-//               },
-//             ),
-//             CupertinoDialogAction(
-//               isDefaultAction: true,
-//               child: const Text(goBack),
-//               onPressed: () {
-//                 get_x.Get.back();
-//                 get_x.Get.back();
-//               },
-//             )
-//           ]
-//               : [
-//             CupertinoDialogAction(
-//               isDefaultAction: true,
-//               child: Text(isNotEmptyString(buttonTitle) ? buttonTitle! : tryAgain),
-//               onPressed: () {
-//                 if (buttonCallBack != null) {
-//                   buttonCallBack();
-//                 } else {
-//                   get_x.Get.back();
-//                 }
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//       barrierDismissible: false,
-//       transitionCurve: Curves.easeInCubic,
-//       transitionDuration: const Duration(milliseconds: 400),
-//     );
-//   }
-// }
 
 showProgressLoader() {
   get_x.Get.dialog(
@@ -342,4 +217,54 @@ Map<String, dynamic> trimJsonValues(Map<String, dynamic> json) {
     }
   });
   return json;
+}
+
+showSnackBar({required String title, required String message}) {
+  if (!get_x.Get.isSnackbarOpen) {
+    return get_x.Get.snackbar(title, message,
+        backgroundColor: Colors.transparent,
+        onTap: (_) {},
+        shouldIconPulse: true,
+        barBlur: 0,
+        isDismissible: true,
+        userInputForm: Form(
+            child: Wrap(
+          children: [
+            Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: title == ApiConfig.success ? color4AA900 : colorB3261E,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: <BoxShadow>[BoxShadow(color: Colors.black12.withOpacity(0.15), blurRadius: 20)]),
+                child: Wrap(children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    width: double.infinity,
+                    decoration: BoxDecoration(color: colorFFFFFF, borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            //  Image.asset(title == ApiConfig.success ? 'assets/icon/success.png' : 'assets/icon/error.png', scale: 4),
+                            const SizedBox(width: 5),
+                            CustomText(txtTitle: title, style: title == ApiConfig.success ? color4AA900w60016 : colorB3261Ew60016)
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+                        CustomText(txtTitle: message, style: color4AA900w50014.copyWith(color: title == ApiConfig.success ? color4AA900 : colorB3261E), textOverflow: TextOverflow.visible)
+                      ],
+                    ),
+                  )
+                ]))
+          ],
+        )),
+        borderRadius: 0,
+        padding: EdgeInsets.zero,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        //boxShadows: <BoxShadow>[BoxShadow(color: Colors.black12.withOpacity(0.15), blurRadius: 16)],
+        duration: const Duration(seconds: 2));
+  }
 }
