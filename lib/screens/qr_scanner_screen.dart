@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:qr_scanner/screens/approved_ticket_screen.dart';
 
+import '../controller/homeController.dart';
+
 class QrScreen extends StatefulWidget {
   const QrScreen({super.key});
 
@@ -112,21 +114,22 @@ class _QrScreenState extends State<QrScreen> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
+
       if (result == null && mounted) {
         controller.pauseCamera();
         result = scanData;
-        Get.off(
-          () => ApprovedTicketScreen(
-            result: result,
-          ),
+
+        HomeController.to.getDetailsFromQr(
+          {},
+          phone: result?.code ?? "",
+          callBack: () {
+            Get.off(
+                  () => ApprovedTicketScreen(
+                result: result,
+              ),
+            );
+          },
         );
-        // HomeController.to.getDetailsFromQr(
-        //   {},
-        //   phone: result?.code ?? "",
-        //   callBack: () {
-        //
-        //   },
-        // );
       }
     });
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:qr_scanner/screens/qr_scanner_screen.dart';
 import 'package:qr_scanner/utility/colors.dart';
 
@@ -24,23 +25,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-                decoration: BoxDecoration(
-                    color: colorDF1827,
-                    borderRadius: BorderRadius.circular(4)),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    Get.to(() => QrScreen());
-                  },
-                  child: Text("Scan QR",style: TextStyle(
-                    color: Colors.white
-                  ),).paddingSymmetric(vertical: 4,horizontal: 8),
-                ))
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(top: 100),
+          child: Column(
+            children: [
+              Lottie.asset('assets/icon/scan_qr.json'),
+              Container(
+                  decoration: BoxDecoration(
+                      color: colorDF1827,
+                      borderRadius: BorderRadius.circular(4)),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      Get.to(() => QrScreen());
+                    },
+                    child: Text("Scan QR",style: TextStyle(
+                      color: Colors.white
+                          ,fontWeight: FontWeight.w600,fontSize: 17
+                    ),).paddingSymmetric(vertical: 8,horizontal: 20),
+                  ))
+            ],
+          ),
         ),
       ),
     );

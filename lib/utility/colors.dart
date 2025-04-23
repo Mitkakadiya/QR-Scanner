@@ -11,7 +11,7 @@ const Color colorF04438 = Color(0xFFF04438);
 const Color color4AA900 = Color(0xFF4AA900);
 const Color colorFFC2BF = Color(0xFFFFC2BF);
 
-const Color colorDF1827 = Color(0xFFDF1827);
+const Color colorDF1827 = Color(0xFFE63A4A);
 
 const Color colorE2F000 = Color(0xFFE2F000);
 const Color colorE8F444 = Color(0xFFE8F444);

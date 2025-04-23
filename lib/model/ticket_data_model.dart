@@ -30,7 +30,7 @@ class TicketDataModel {
   });
 
   factory TicketDataModel.fromJson(Map<String, dynamic> json) => TicketDataModel(
-    id: json["_id"],
+    id: json["id"],
     type: json["type"],
     status: json["status"],
     date: json["date"] == null ? null : DateTime.parse(json["date"]),
@@ -41,7 +41,7 @@ class TicketDataModel {
   );
 
   Map<String, dynamic> toJson() => {
-    "_id": id,
+    "id": id,
     "type": type,
     "status": status,
     "date": date?.toIso8601String(),

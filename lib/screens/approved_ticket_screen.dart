@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
@@ -33,64 +35,61 @@ class ApprovedTicketScreen extends StatelessWidget {
           backgroundColor: colorDF1827,
           title: Text(
             "My Tickets",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.all(20),
           child: SizedBox(
             width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                HomeController.to.ticketList.isNotEmpty
-                    ? Column(
+            child: HomeController.to.ticketList.isNotEmpty
+                ? Column(
+                    children: [
+                      if(HomeController.to.ticketList.where((element) => element.status == "Active").isNotEmpty) Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text("Select all").paddingOnly(right: 4),
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  if (isAllSelected()) {
-                                    selectedTickets.clear();
-                                  } else {
-                                    selectedTickets.clear();
-                                    for (int i = 0; i < HomeController.to.ticketList.length; i++) {
-                                      if (HomeController.to.ticketList[i].status == "Active") {
-                                        selectedTickets.add(HomeController.to.ticketList[i].id ?? '');
-                                      }
-                                    }
+                          Text("Select all").paddingOnly(right: 4),
+                      GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              if (isAllSelected()) {
+                                selectedTickets.clear();
+                              } else {
+                                selectedTickets.clear();
+                                for (int i = 0; i < HomeController.to.ticketList.length; i++) {
+                                  if (HomeController.to.ticketList[i].status == "Active") {
+                                    selectedTickets.add(HomeController.to.ticketList[i].id ?? '');
                                   }
-                                  print(selectedTickets);
-                                },
-                                child: Image.asset(
-                                  isAllSelected() ? "assets/icon/check_box.png" : "assets/icon/un_check_box.png",
-                                  scale: 3.5,
-                                ),
-                              ),
-                            ],
-                          ).paddingOnly(bottom: 12),
-                          ListView.separated(
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return ticketView(ticketDataModel: HomeController.to.ticketList[index], index: index);
-                              },
-                              separatorBuilder: (context, index) {
-                                return SizedBox(
-                                  height: 20,
-                                );
-                              },
-                              itemCount: HomeController.to.ticketList.length),
+                                }
+                              }
+                              print(selectedTickets);
+                            },
+                            child: Image.asset(
+                              isAllSelected() ? "assets/icon/check_box.png" : "assets/icon/un_check_box.png",
+                              scale: 3.5,
+                            ),
+                          ),
                         ],
-                      )
-                    : Text(
-                        "Currently you don't have any active ticket",
-                        style: TextStyle(fontSize: 18),
-                      ),
-              ],
-            ),
+                      ).paddingOnly(bottom: 12),
+                      ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return ticketView(ticketDataModel: HomeController.to.ticketList[index], index: index);
+                          },
+                          separatorBuilder: (context, index) {
+                            return SizedBox(
+                              height: 20,
+                            );
+                          },
+                          itemCount: HomeController.to.ticketList.length),
+                    ],
+                  )
+                : Center(
+                  child: Text(
+                      "Currently you don't have any active ticket",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                ),
           ),
         ),
         bottomNavigationBar: bottomButton(context: context),
@@ -99,7 +98,8 @@ class ApprovedTicketScreen extends StatelessWidget {
   }
 
   bool isAllSelected() {
-    if (HomeController.to.ticketList.length == selectedTickets.length && HomeController.to.ticketList.isNotEmpty) {
+    if (HomeController.to.ticketList.where((element) => element.status == "Active").length == selectedTickets.length &&
+        HomeController.to.ticketList.isNotEmpty ) {
       return true;
     } else {
       return false;
@@ -232,7 +232,7 @@ class ApprovedTicketScreen extends StatelessWidget {
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: () {
-                            Get.to(() => HomeScreen());
+                            Get.off(() => HomeScreen());
                           },
                           child: Text(
                             "Scan Again",

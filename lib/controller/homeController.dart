@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -52,6 +53,7 @@ class HomeController extends GetxController {
           print(response.data);
           List data = jsonDecode(response.data) ?? [];
           ticketList.value = data.map((e) => TicketDataModel.fromJson(e)).toList();
+
             // dataFromQr.value = TicketDataModel.fromJson(jsonDecode(response.data));
 
           if (callBack != null) {
@@ -87,6 +89,36 @@ class HomeController extends GetxController {
       methodType: ApiConfig.methodPATCH,
       isQueryParam: false,
     );
+  }
+final String pravesh = 'ravesh';
+  final RxList<bool> isVisible = List.generate(6, (_) => false).obs;
+
+
+  Timer? _animationTimer;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _startLoopAnimation();
+  }
+
+  void _startLoopAnimation() {
+    _animationTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
+      for (int i = 0; i < isVisible.length; i++) {
+        isVisible[i] = true;
+        await Future.delayed(const Duration(milliseconds: 150));
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+      for (int i = 0; i < isVisible.length; i++) {
+        isVisible[i] = false;
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    _animationTimer?.cancel();
+    super.onClose();
   }
 
 }
