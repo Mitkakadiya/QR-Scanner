@@ -45,7 +45,7 @@ class HomeController extends GetxController {
   Rx<TicketDataModel> dataFromQr = TicketDataModel().obs;
   // LoginDataModel storedLoginDataModel = LoginDataModel.fromJson(getObject("loginModel") ?? {});
 
-  Future<void> getDetailsFromQr(Map<String, dynamic> params, {Function? callBack , required String phone}) async{
+  Future<void> getDetailsFromQr(Map<String, dynamic> params, {Function? callBack ,Function? errorCallBack ,required String phone}) async{
     await apiServiceCall(
         params: params,
         serviceUrl: "${ApiConfig.getTicketDetails}$phone",
@@ -60,7 +60,11 @@ class HomeController extends GetxController {
             callBack();
           }
         },
-        error: (dio.Response<dynamic> response) {},
+        error: (dio.Response<dynamic> response) {
+          if (errorCallBack != null) {
+            errorCallBack();
+          }
+        },
         isStopAction: true.obs,
         isLoading: qrLoader,
         methodType: ApiConfig.methodGET,

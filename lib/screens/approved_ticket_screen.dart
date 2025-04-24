@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:qr_scanner/controller/homeController.dart';
 import 'package:qr_scanner/screens/home_screen.dart';
@@ -85,10 +86,7 @@ class ApprovedTicketScreen extends StatelessWidget {
                     ],
                   )
                 : Center(
-                  child: Text(
-                      "Currently you don't have any active ticket",
-                      style: TextStyle(fontSize: 18),
-                    ),
+                  child:  Lottie.asset('assets/icon/no_ticket.json'),
                 ),
           ),
         ),
@@ -232,7 +230,7 @@ class ApprovedTicketScreen extends StatelessWidget {
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: () {
-                            Get.off(() => HomeScreen());
+                            Get.offAll(() => HomeScreen());
                           },
                           child: Text(
                             "Scan Again",

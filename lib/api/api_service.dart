@@ -109,6 +109,12 @@ Future<void> apiServiceCall(
               var jsonResponse = jsonDecode(response.data);
               tempError(response);
             } catch (e) {
+              final response = Response(
+                data: {"error": "something went wrong"},
+                statusCode: 400,
+                requestOptions: RequestOptions(path: tempServiceUrl),
+              );
+              tempError(response);
               showSnackBar(title: ApiConfig.error, message: "Something went wrong");
             }
           } else {

@@ -6,6 +6,7 @@ import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:qr_scanner/screens/approved_ticket_screen.dart';
 
 import '../controller/homeController.dart';
+import '../utility/colors.dart';
 
 class QrScreen extends StatefulWidget {
   const QrScreen({super.key});
@@ -104,7 +105,7 @@ class _QrScreenState extends State<QrScreen> {
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
-      overlay: QrScannerOverlayShape(borderColor: Colors.red, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
+      overlay: QrScannerOverlayShape(borderColor: colorDF1827, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
       // onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -114,17 +115,20 @@ class _QrScreenState extends State<QrScreen> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
-
-      if (result == null && mounted) {
+      if (mounted) {
         controller.pauseCamera();
         result = scanData;
 
         HomeController.to.getDetailsFromQr(
           {},
           phone: result?.code ?? "",
+          errorCallBack: () {
+            result = null;
+            controller.resumeCamera();
+          },
           callBack: () {
             Get.off(
-                  () => ApprovedTicketScreen(
+              () => ApprovedTicketScreen(
                 result: result,
               ),
             );
@@ -133,5 +137,4 @@ class _QrScreenState extends State<QrScreen> {
       }
     });
   }
-
 }
